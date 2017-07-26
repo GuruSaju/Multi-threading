@@ -1,0 +1,25 @@
+If we use
+******Synchronization******
+But locking is not a lightweight mechanism and have several disadvantages. When several threads try to 
+acquire the same lock, one or more threads will be suspended and they will be resumed later. When the 
+critical section is little, the overhead is really heavy especially when the lock is often acquired and 
+there is a lot of contention. Another disadvantage is that the other threads waiting of the lock cannot 
+do something else during waiting and if the thread who has the lock is delayed (due to a page fault or 
+the end of the time quanta by example), the others threads cannot take their turn.
+
+So how to do to avoid this disadvantages ? We must use non-blocking algorithms. This algorithms don't use 
+blocking mechanisms and by that fact are more scalable and performing. These algorithms use low-level machine 
+instructions which are atomic to ensure the atomicity of higher-level operations. While locking is a pessimistic 
+approach, we can also use optimistic technique to develop algorithms. This time, we'll detect collisions between 
+threads in which case, the operation fails and we do something else (often retrying the same operation).
+
+The actual processors provide several instructions that simplify greatly the implementation of these non-blocking 
+algorithms, the most-used operation today is the compare-and-swap operation (CAS). This operation takes three parameters, 
+* the memory address, 
+* the expected current value and 
+* the new value. It atomically update the value at the given memory address if the current value is the expected, 
+otherwise it do nothing. In both cases, the operation return the value 
+at the address after the operation execution. So when several threads try to execute the CAS operation, one thread wins 
+and the others do nothing. So the caller can choose to retry or to do something else. We often use this operation to 
+implement another operation, the compare-and-set. This method makes exactly the same things as CAS but return a boolean 
+indicating if the operation succeeded or not.
